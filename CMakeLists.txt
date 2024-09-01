@@ -16,7 +16,15 @@ else()
     message(FATAL_ERROR "Boost not found")
 endif()
 
-add_executable(Celeris src/main.cpp src/router.cpp src/server.cpp)
+# Add source files
+set(SOURCES
+    src/main.cpp
+    src/celeris.cpp
+    src/router.cpp
+)
+
+# Create executable
+add_executable(Celeris ${SOURCES})
 
 # Link Boost libraries
 target_link_libraries(Celeris Boost::system)

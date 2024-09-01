@@ -15,8 +15,6 @@ public:
     using RequestHandler = std::function<void(std::shared_ptr<tcp::socket>, Request&, Response&)>;
     static void register_route(const std::string& path, RequestHandler handler);
     static void handle_request(std::shared_ptr<tcp::socket> socket);
-
-private:
     static std::map<std::string, RequestHandler> routes_;
 };
 
