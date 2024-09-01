@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <nlohmann/json.hpp>
 
 std::map<std::string, Router::RequestHandler> Router::routes_;
 
@@ -56,7 +57,7 @@ void Router::handle_request(std::shared_ptr<tcp::socket> socket) {
                     it->second(socket, req, res);  // Pass request and response objects to the handler
                 } else {
                     res.status_code = 404;
-                    res.body = { {"detail", "404 Not Found"}, {"status", 404} };
+                    res.body = nlohmann::json{{"detail", "404 Not Found"}, {"status", 404}}.dump();
                 }
 
                 // Send response
