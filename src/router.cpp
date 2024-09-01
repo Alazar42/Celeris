@@ -1,3 +1,5 @@
+// router.cpp
+
 #include "router.hpp"
 #include "request.hpp"
 #include "response.hpp"
@@ -54,7 +56,7 @@ void Router::handle_request(std::shared_ptr<tcp::socket> socket) {
                     it->second(socket, req, res);  // Pass request and response objects to the handler
                 } else {
                     res.status_code = 404;
-                    res.body = "Route Not Found";
+                    res.body = { {"detail", "404 Not Found"}, {"status", 404} };
                 }
 
                 // Send response
