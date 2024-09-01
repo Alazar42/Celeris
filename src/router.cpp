@@ -1,38 +1,64 @@
 #include "router.hpp"
+#include "request.hpp"
+#include "response.hpp"
 #include <iostream>
-#include <string>
+#include <sstream>
+#include <algorithm>
+
+std::map<std::string, Router::RequestHandler> Router::routes_;
+
+void Router::register_route(const std::string& path, RequestHandler handler) {
+    routes_[path] = handler;
+}
 
 void Router::handle_request(std::shared_ptr<tcp::socket> socket) {
     auto buffer = std::make_shared<boost::asio::streambuf>();
 
-    // Read until end of the HTTP header (denoted by \r\n\r\n)
     boost::asio::async_read_until(*socket, *buffer, "\r\n\r\n",
-        [socket, buffer](const boost::system::error_code& error, std::size_t bytes_transferred) {
+        [socket, buffer](const boost::system::error_code& error, std::size_t) {
             if (!error) {
                 std::istream stream(buffer.get());
                 std::string request_line;
                 std::getline(stream, request_line);
 
-                std::cout << "Received request: " << request_line << std::endl;
+                std::string method, path, version;
+                std::istringstream request_stream(request_line);
+                request_stream >> method >> path >> version;
 
-                std::string response;
-                json json_response;
-
-                if (request_line.find("GET /json") != std::string::npos) {
-                    // Example of creating a JSON response
-                    json_response["message"] = "Hello, JSON!";
-                    json_response["status"] = "success";
-                    
-                    response = "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: " 
-                            + std::to_string(json_response.dump().size()) + "\r\n\r\n" 
-                            + json_response.dump();
-                } else {
-                    // Handle other requests
-                    response = "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\nContent-Length: 14\r\n\r\nRoute Not Found";
+                // Parse headers and body
+                std::map<std::string, std::string> headers;
+                std::string header_line;
+                while (std::getline(stream, header_line) && header_line != "\r") {
+                    auto colon_pos = header_line.find(':');
+                    if (colon_pos != std::string::npos) {
+                        std::string header_name = header_line.substr(0, colon_pos);
+                        std::string header_value = header_line.substr(colon_pos + 1);
+                        headers[header_name] = header_value;
+                    }
                 }
 
-                // Write the response back to the client
-                boost::asio::async_write(*socket, boost::asio::buffer(response),
+                std::string body;
+                if (headers.find("Content-Length") != headers.end()) {
+                    std::size_t content_length = std::stoul(headers["Content-Length"]);
+                    body.resize(content_length);
+                    stream.read(&body[0], content_length);
+                }
+
+                // Create Request and Response objects
+                Request req(method, path, headers, body);
+                Response res;
+
+                // Find and execute the route handler
+                auto it = routes_.find(path);
+                if (it != routes_.end()) {
+                    it->second(socket, req, res);  // Pass request and response objects to the handler
+                } else {
+                    res.status_code = 404;
+                    res.body = "Route Not Found";
+                }
+
+                // Send response
+                boost::asio::async_write(*socket, boost::asio::buffer(res.to_string()),
                     [socket](const boost::system::error_code& error, std::size_t) {
                         if (!error) {
                             socket->shutdown(tcp::socket::shutdown_both);

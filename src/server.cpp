@@ -13,7 +13,7 @@ void Server::start_accept() {
     acceptor_.async_accept(*socket,
         [this, socket](const boost::system::error_code& error) {
             if (!error) {
-                std::cout << "New connection accepted!" << std::endl;
+                // std::cout << "New connection accepted!" << std::endl;
                 Router::handle_request(socket);  // Pass the socket to the router for handling
             } else {
                 std::cerr << "Error accepting connection: " << error.message() << std::endl;
