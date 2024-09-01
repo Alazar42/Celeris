@@ -7,33 +7,50 @@
 #include "server.hpp"
 #include <nlohmann/json.hpp> // Include this header for JSON handling
 
-using json = nlohmann::json; // Define the json alias here
+using json = nlohmann::json; // Define the json alias for easier usage
 
-// Handler for POST requests with JSON data
-void json_post_handler(std::shared_ptr<tcp::socket> socket, Request& req, Response& res) {
-    std::cout << "Received a request with method: " << req.method << std::endl;
+// Unified JSON handler for GET and POST requests
+void json_handler(std::shared_ptr<tcp::socket> socket, Request& req, Response& res) {
+    std::cout << "Received request with method: " << req.method << std::endl;
 
-    if (req.method == "POST") {
+    if (req.method == "GET") {
+        // Handle GET request
+        json json_response;
+        json_response["message"] = "Hello, this is a GET response!";
+        json_response["status"] = "success";
+
+        res.status_code = 200;
+        res.body = json_response.dump(); // Convert JSON to string for the response
+    } else if (req.method == "POST") {
+        // Handle POST request
         std::cout << "Request body: " << req.body << std::endl;
-        try {
-            // Parse the request body as JSON
-            json json_request = json::parse(req.body);
 
-            // Extract the "message" field from the JSON, defaulting if not present
+        if (req.body.empty()) {
+            // Check if the body is empty and respond accordingly
+            std::cerr << "Empty request body received." << std::endl;
+
+            res.status_code = 400;
+            json json_response;
+            json_response["detail"] = "Empty request body. JSON expected.";
+            json_response["status"] = 400;
+            res.body = json_response.dump();
+            return;
+        }
+
+        try {
+            json json_request = json::parse(req.body); // Parse the request body as JSON
+
             std::string message = json_request.value("message", "No message received");
 
-            // Create a JSON response
             json json_response;
             json_response["received_message"] = message;
             json_response["status"] = "success";
 
-            // Set response status and body
             res.status_code = 200;
             res.body = json_response.dump(); // Convert JSON to string for the response
         } catch (const json::parse_error& e) {
             std::cerr << "JSON parse error: " << e.what() << std::endl;
 
-            // Create an error response for JSON parsing issues
             res.status_code = 400;
             json json_response;
             json_response["detail"] = "Invalid JSON format";
@@ -41,7 +58,7 @@ void json_post_handler(std::shared_ptr<tcp::socket> socket, Request& req, Respon
             res.body = json_response.dump();
         }
     } else {
-        // Handle method not allowed cases
+        // Handle unsupported methods
         res.status_code = 405;
         json json_response;
         json_response["detail"] = "Method Not Allowed";
@@ -56,8 +73,8 @@ int main() {
         boost::asio::io_context io_context;
         Celeris server(io_context, 8080);
 
-        // Register the route for JSON POST requests
-        server.register_route("/json", json_post_handler);
+        // Register the route with the unified handler for JSON requests
+        server.register_route("/json", json_handler);
 
         server.start();
     } catch (const std::exception& e) {
