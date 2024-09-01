@@ -3,8 +3,10 @@
 
 #include <boost/asio.hpp>
 #include <memory>
+#include <nlohmann/json.hpp>  // Include the nlohmann JSON library
 
 using boost::asio::ip::tcp;
+using json = nlohmann::json;  // Alias for convenience
 
 class Router {
 public:

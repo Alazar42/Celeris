@@ -16,9 +16,18 @@ void Router::handle_request(std::shared_ptr<tcp::socket> socket) {
                 std::cout << "Received request: " << request_line << std::endl;
 
                 std::string response;
-                if (request_line.find("GET / ") != std::string::npos) {
-                    response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 13\r\n\r\nHello, World!";
+                json json_response;
+
+                if (request_line.find("GET /json") != std::string::npos) {
+                    // Example of creating a JSON response
+                    json_response["message"] = "Hello, JSON!";
+                    json_response["status"] = "success";
+                    
+                    response = "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: " 
+                            + std::to_string(json_response.dump().size()) + "\r\n\r\n" 
+                            + json_response.dump();
                 } else {
+                    // Handle other requests
                     response = "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\nContent-Length: 14\r\n\r\nRoute Not Found";
                 }
 
