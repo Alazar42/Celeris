@@ -16,8 +16,8 @@ Celeris is a high-performance backend technology built with C++. Inspired by the
 To get started with Celeris, clone the repository and build the project:
 
 ```bash
-git clone https://github.com/yourusername/celeris.git
-cd celeris
+git clone https://github.com/Alazar42/Celeris.git
+cd Celeris
 mkdir build && cd build
 cmake ..
 make
@@ -54,10 +54,6 @@ int main() {
 }
 
 ```
-
-## Documentation
-
-For full documentation and advanced usage, please visit the [Celeris Documentation](https://github.com/yourusername/celeris/wiki).
 
 ## Contributing
 
