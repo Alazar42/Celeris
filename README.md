@@ -28,26 +28,31 @@ make
 Here's a basic example of setting up a simple server with Celeris:
 
 ```cpp
-#include <celeris/celeris.h>
+#include "celeris/celeris.hpp"
+#include <nlohmann/json.hpp>
 
 int main() {
-    Celeris app;
+    // Create a Celeris server instance
+    Celeris app(8080);
 
     // Define a simple GET route
     app.get("/hello", [](const Request& req, Response& res) {
-        res.json({{"message", "Hello, world!"}});
+        nlohmann::json json_response = {{"message", "Hello, world!"}};
+        res.set_json(json_response);
     });
 
     // Define a POST route
     app.post("/echo", [](const Request& req, Response& res) {
-        res.json(req.body());
+        nlohmann::json json_request = nlohmann::json::parse(req.body);
+        res.set_json(json_request);
     });
 
-    // Start the server on port 8080
-    app.listen(8080);
+    // Start the server
+    app.listen();
 
     return 0;
 }
+
 ```
 
 ## Documentation
