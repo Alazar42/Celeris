@@ -55,6 +55,10 @@ int main() {
 
 ```
 
+## Documentation
+
+For full documentation and advanced usage, please visit the [Celeris Documentation](https://github.com/Alazar42/Celeris/wiki).
+
 ## Contributing
 
 Celeris is in active development, and contributions are welcome! To get started:
