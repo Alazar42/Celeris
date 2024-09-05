@@ -75,6 +75,7 @@ int main() {
 
         // Register the route with the unified handler for JSON requests
         server.register_route("/json", json_handler);
+        server.register_route("/", json_handler);
 
         server.start();
     } catch (const std::exception& e) {
