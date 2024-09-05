@@ -2,28 +2,33 @@
 #define CELERIS_HPP
 
 #include <boost/asio.hpp>
-#include <memory>
 #include <functional>
-#include <string>
 #include <map>
+#include <memory>
+#include <string>
+#include <nlohmann/json.hpp>
 #include "request.hpp"
 #include "response.hpp"
-
-using boost::asio::ip::tcp;
+#include "router.hpp"
 
 class Celeris {
 public:
-    Celeris(boost::asio::io_context& io_context, unsigned short port);
+    Celeris(unsigned short port);
 
-    void start(); // Starts the server
-    void register_route(const std::string& path, std::function<void(std::shared_ptr<tcp::socket>, Request&, Response&)> handler);
+    void get(const std::string& path, std::function<void(const Request&, Response&)> handler);
+    void post(const std::string& path, std::function<void(const Request&, Response&)> handler);
+    void listen();
 
 private:
-    void start_accept(); // Declare the start_accept function here
-    void handle_request(std::shared_ptr<tcp::socket> socket);
+    void start();
+    void start_accept();
+    void handle_request(std::shared_ptr<boost::asio::ip::tcp::socket> socket);
 
-    boost::asio::io_context& io_context_;
-    tcp::acceptor acceptor_;
+    // Declare register_route
+    void register_route(const std::string& path, std::function<void(std::shared_ptr<boost::asio::ip::tcp::socket>, Request&, Response&)> handler);
+
+    boost::asio::io_context io_context_;
+    boost::asio::ip::tcp::acceptor acceptor_;
 };
 
 #endif // CELERIS_HPP
