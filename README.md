@@ -65,8 +65,8 @@ Celeris is in active development, and contributions are welcome! To get started:
 
 ## License
 
-Celeris is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
+Celeris is licensed under the GNU GENERAL PUBLIC LICENSE License. See the [LICENSE](LICENSE) file for more information.
 
 ## Contact
 
-For questions, issues, or feature requests, please open an issue on GitHub or contact us at [email@example.com](mailto:email@example.com).
+For questions, issues, or feature requests, please open an issue on GitHub or contact us at [alazartesfaye42@gmail.com](mailto:alazartesfaye42@gmail.com).
