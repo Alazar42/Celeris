@@ -38,8 +38,34 @@ public:
     // Convert response to string for sending over the network
     std::string to_string() const {
         static const std::map<int, std::string> status_phrases = {
-            {200, "OK"}, {400, "Bad Request"}, {404, "Not Found"}, {500, "Internal Server Error"}
-        };
+    {200, "OK"},
+    {201, "Created"},
+    {202, "Accepted"},
+    {204, "No Content"},
+    {206, "Partial Content"},
+    {301, "Moved Permanently"},
+    {302, "Found"},
+    {304, "Not Modified"},
+    {400, "Bad Request"},
+    {401, "Unauthorized"},
+    {403, "Forbidden"},
+    {404, "Not Found"},
+    {405, "Method Not Allowed"},
+    {406, "Not Acceptable"},
+    {409, "Conflict"},
+    {413, "Request Entity Too Large"},
+    {414, "Request-URI Too Long"},
+    {415, "Unsupported Media Type"},
+    {416, "Requested Range Not Satisfiable"},
+    {417, "Expectation Failed"},
+    {418, "I'm a teapot"}, // A humorous status code
+    {500, "Internal Server Error"},
+    {501, "Not Implemented"},
+    {502, "Bad Gateway"},
+    {503, "Service Unavailable"},
+    {504, "Gateway Timeout"},
+    {505, "HTTP Version Not Supported"}
+};
         auto it = status_phrases.find(status_code);
         std::string status_phrase = (it != status_phrases.end()) ? it->second : "Unknown Status";
 

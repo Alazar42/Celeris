@@ -3,11 +3,16 @@
 
 int main() {
     // Create a Celeris server instance
-    Celeris app(8080);
+    Celeris app(8080, "0.0.0.0");
 
     // Define a simple GET route
     app.get("/hello", [](const Request& req, Response& res) {
         nlohmann::json json_response = {{"message", "Hello, world!"}};
+        res.set_json(json_response);
+    });
+
+    app.get("/", [](const Request& req, Response& res) {
+        nlohmann::json json_response = {{"message", "Welcome To HealthID Backend"}};
         res.set_json(json_response);
     });
 

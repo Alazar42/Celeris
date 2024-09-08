@@ -12,7 +12,7 @@
 
 class Celeris : private Router {
 public:
-    explicit Celeris(unsigned short port = 8080);
+    explicit Celeris(unsigned short port, const std::string& address = "127.0.0.1");
 
     std::string get_reason_phrase(int status_code);
     // Register GET and POST routes

@@ -1,5 +1,11 @@
 #include "celeris.hpp"
+#include <boost/asio.hpp>
 #include <iostream>
+#include <map>
+#include <string>
+#include <functional>
+#include <memory>
+#include <sstream>
 
 // ANSI escape codes for colored output
 #define RESET "\033[0m"
@@ -16,10 +22,32 @@ void print_debug(const std::string& message, const std::string& color) {
 std::string Celeris::get_reason_phrase(int status_code) {
     static const std::map<int, std::string> status_codes = {
         {200, "OK"},
+        {201, "Created"},
+        {202, "Accepted"},
+        {204, "No Content"},
+        {206, "Partial Content"},
+        {301, "Moved Permanently"},
+        {302, "Found"},
+        {304, "Not Modified"},
         {400, "Bad Request"},
+        {401, "Unauthorized"},
+        {403, "Forbidden"},
         {404, "Not Found"},
         {405, "Method Not Allowed"},
-        // Add more status codes as needed
+        {406, "Not Acceptable"},
+        {409, "Conflict"},
+        {413, "Request Entity Too Large"},
+        {414, "Request-URI Too Long"},
+        {415, "Unsupported Media Type"},
+        {416, "Requested Range Not Satisfiable"},
+        {417, "Expectation Failed"},
+        {418, "I'm a teapot"}, // A humorous status code
+        {500, "Internal Server Error"},
+        {501, "Not Implemented"},
+        {502, "Bad Gateway"},
+        {503, "Service Unavailable"},
+        {504, "Gateway Timeout"},
+        {505, "HTTP Version Not Supported"}
     };
 
     auto it = status_codes.find(status_code);
@@ -29,8 +57,8 @@ std::string Celeris::get_reason_phrase(int status_code) {
     return "Unknown Status";
 }
 
-Celeris::Celeris(unsigned short port)
-    : io_context_(), acceptor_(io_context_, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)) {}
+Celeris::Celeris(unsigned short port, const std::string& address)
+    : io_context_(), acceptor_(io_context_, boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(address), port)) {}
 
 void Celeris::get(const std::string& path, std::function<void(const Request&, Response&)> handler) {
     register_route(path, [handler](std::shared_ptr<boost::asio::ip::tcp::socket> socket, Request& req, Response& res) {
@@ -57,7 +85,7 @@ void Celeris::register_route(const std::string& path, std::function<void(std::sh
 }
 
 void Celeris::start() {
-    print_debug("Celeris server running on port " + std::to_string(acceptor_.local_endpoint().port()), GREEN);
+    print_debug("Celeris server running on http://" + acceptor_.local_endpoint().address().to_string() + ":" + std::to_string(acceptor_.local_endpoint().port()) + " (Press CTRL+C to quit)", GREEN);
     start_accept();
     io_context_.run();
 }
@@ -142,7 +170,6 @@ void Celeris::handle_request(std::shared_ptr<boost::asio::ip::tcp::socket> socke
             }
         });
 }
-
 
 void Celeris::listen() {
     start();
