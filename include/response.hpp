@@ -13,38 +13,33 @@ public:
 
     Response() : status_code(200) {}
 
-    // Method to set the response body as JSON
+    // Set the response body as JSON
     void set_json(const nlohmann::json& json_obj) {
-        body = json_obj.dump(); // Convert JSON object to string
-        status_code = 200; // Default status code for success
-        headers["Content-Type"] = "application/json"; // Set default header
+        body = json_obj.dump();
+        status_code = 200;
+        headers["Content-Type"] = "application/json";
     }
 
-    // Method to set error JSON response
+    // Set error JSON response
     void set_error(int code, const std::string& detail) {
         nlohmann::json json_response;
         json_response["detail"] = detail;
         json_response["status"] = code;
         body = json_response.dump();
         status_code = code;
-        headers["Content-Type"] = "application/json"; // Set default header
+        headers["Content-Type"] = "application/json";
     }
 
-    // Add method to set custom headers
+    // Set custom headers
     void set_header(const std::string& key, const std::string& value) {
         headers[key] = value;
     }
 
+    // Convert response to string for sending over the network
     std::string to_string() const {
-        // Map status codes to reason phrases
         static const std::map<int, std::string> status_phrases = {
-            {200, "OK"},
-            {400, "Bad Request"},
-            {404, "Not Found"},
-            {500, "Internal Server Error"}
+            {200, "OK"}, {400, "Bad Request"}, {404, "Not Found"}, {500, "Internal Server Error"}
         };
-
-        // Get the reason phrase for the current status code
         auto it = status_phrases.find(status_code);
         std::string status_phrase = (it != status_phrases.end()) ? it->second : "Unknown Status";
 

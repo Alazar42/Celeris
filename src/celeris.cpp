@@ -1,5 +1,19 @@
 #include "celeris.hpp"
 #include <iostream>
+#include <iomanip>
+
+// ANSI escape codes for colored output
+#define RESET "\033[0m"
+#define RED "\033[31m"
+#define GREEN "\033[32m"
+#define YELLOW "\033[33m"
+#define CYAN "\033[36m"
+#define MAGENTA "\033[35m"
+
+// Helper function to print colorful debug logs
+void print_debug(const std::string& message, const std::string& color) {
+    std::cout << color << message << RESET << std::endl;
+}
 
 Celeris::Celeris(unsigned short port)
     : io_context_(), acceptor_(io_context_, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)) {}
@@ -9,7 +23,7 @@ void Celeris::get(const std::string& path, std::function<void(const Request&, Re
         if (req.method == "GET") {
             handler(req, res);
         } else {
-            res.set_error(405, "Method Not Allowed: '"+ req.method + "'");
+            res.set_error(405, "Method Not Allowed: '" + req.method + "'");
         }
     });
 }
@@ -19,7 +33,7 @@ void Celeris::post(const std::string& path, std::function<void(const Request&, R
         if (req.method == "POST") {
             handler(req, res);
         } else {
-            res.set_error(405, "Method Not Allowed '"+ req.method + "'");
+            res.set_error(405, "Method Not Allowed '" + req.method + "'");
         }
     });
 }
@@ -29,7 +43,7 @@ void Celeris::register_route(const std::string& path, std::function<void(std::sh
 }
 
 void Celeris::start() {
-    std::cout << "Celeris server running on port " << acceptor_.local_endpoint().port() << std::endl;
+    print_debug("Celeris server running on port " + std::to_string(acceptor_.local_endpoint().port()), GREEN);
     start_accept();
     io_context_.run();
 }
@@ -40,7 +54,7 @@ void Celeris::start_accept() {
         if (!ec) {
             handle_request(socket);
         } else {
-            std::cerr << "Error accepting connection: " << ec.message() << std::endl;
+            print_debug("Error accepting connection: " + ec.message(), RED);
         }
         start_accept();
     });
@@ -60,18 +74,11 @@ void Celeris::handle_request(std::shared_ptr<boost::asio::ip::tcp::socket> socke
                 std::istringstream request_stream(request_line);
                 request_stream >> method >> path >> version;
 
-                std::map<std::string, std::string> headers;
-                std::string header_line;
-                while (std::getline(stream, header_line) && header_line != "\r") {
-                    auto colon_pos = header_line.find(':');
-                    if (colon_pos != std::string::npos) {
-                        std::string header_name = header_line.substr(0, colon_pos);
-                        std::string header_value = header_line.substr(colon_pos + 2); // Adjust for space after ':'
-                        headers[header_name] = header_value;
-                    }
-                }
+                print_debug("Received Request: " + method + " " + path + " " + version, CYAN);
 
-                // Reading the body if Content-Length is present
+                std::map<std::string, std::string> headers;
+                
+
                 std::string body;
                 if (headers.count("Content-Length")) {
                     std::size_t content_length = std::stoul(headers["Content-Length"]);
@@ -82,29 +89,29 @@ void Celeris::handle_request(std::shared_ptr<boost::asio::ip::tcp::socket> socke
                 Request req(method, path, headers, body);
                 Response res;
 
-                // Route handling
                 auto route_it = Router::routes_.find(path);
                 if (route_it != Router::routes_.end()) {
                     route_it->second(socket, req, res);
+                    print_debug("Response Sent: " + res.to_string(), GREEN);
                 } else {
                     res.set_error(404, "Route Not Found");
+                    print_debug("Error: Route Not Found for " + path, RED);
                 }
 
-                // Sending the response
                 boost::asio::async_write(*socket, boost::asio::buffer(res.to_string()),
                     [socket](const boost::system::error_code& error, std::size_t) {
                         if (!error) {
                             boost::system::error_code shutdown_ec;
                             socket->shutdown(boost::asio::ip::tcp::socket::shutdown_both, shutdown_ec);
                             if (shutdown_ec) {
-                                std::cerr << "Error shutting down socket: " << shutdown_ec.message() << std::endl;
+                                print_debug("Error shutting down socket: " + shutdown_ec.message(), RED);
                             }
                         } else {
-                            std::cerr << "Error sending response: " << error.message() << std::endl;
+                            print_debug("Error sending response: " + error.message(), RED);
                         }
                     });
             } else {
-                std::cerr << "Error reading request: " << error.message() << std::endl;
+                print_debug("Error reading request: " + error.message(), RED);
             }
         });
 }

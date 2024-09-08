@@ -3,32 +3,33 @@
 
 #include <boost/asio.hpp>
 #include <functional>
+#include <string>
 #include <map>
 #include <memory>
-#include <string>
-#include <nlohmann/json.hpp>
 #include "request.hpp"
 #include "response.hpp"
 #include "router.hpp"
 
-class Celeris {
+class Celeris : private Router {
 public:
-    Celeris(unsigned short port);
+    explicit Celeris(unsigned short port = 8080);
 
+    // Register GET and POST routes
     void get(const std::string& path, std::function<void(const Request&, Response&)> handler);
     void post(const std::string& path, std::function<void(const Request&, Response&)> handler);
+
+    // Start the server
     void listen();
 
 private:
+    boost::asio::io_context io_context_;
+    boost::asio::ip::tcp::acceptor acceptor_;
+
+    // Internal methods
+    void register_route(const std::string& path, std::function<void(std::shared_ptr<boost::asio::ip::tcp::socket>, Request&, Response&)> handler);
     void start();
     void start_accept();
     void handle_request(std::shared_ptr<boost::asio::ip::tcp::socket> socket);
-
-    // Declare register_route
-    void register_route(const std::string& path, std::function<void(std::shared_ptr<boost::asio::ip::tcp::socket>, Request&, Response&)> handler);
-
-    boost::asio::io_context io_context_;
-    boost::asio::ip::tcp::acceptor acceptor_;
 };
 
 #endif // CELERIS_HPP
