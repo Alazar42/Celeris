@@ -14,10 +14,10 @@ class Celeris : private Router {
 public:
     explicit Celeris(unsigned short port = 8080);
 
+    std::string get_reason_phrase(int status_code);
     // Register GET and POST routes
     void get(const std::string& path, std::function<void(const Request&, Response&)> handler);
     void post(const std::string& path, std::function<void(const Request&, Response&)> handler);
-
     // Start the server
     void listen();
 

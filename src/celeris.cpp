@@ -1,18 +1,32 @@
 #include "celeris.hpp"
 #include <iostream>
-#include <iomanip>
 
 // ANSI escape codes for colored output
 #define RESET "\033[0m"
-#define RED "\033[31m"
 #define GREEN "\033[32m"
-#define YELLOW "\033[33m"
 #define CYAN "\033[36m"
-#define MAGENTA "\033[35m"
+#define RED "\033[31m"
 
 // Helper function to print colorful debug logs
 void print_debug(const std::string& message, const std::string& color) {
     std::cout << color << message << RESET << std::endl;
+}
+
+// Helper function to get reason phrase from status code
+std::string Celeris::get_reason_phrase(int status_code) {
+    static const std::map<int, std::string> status_codes = {
+        {200, "OK"},
+        {400, "Bad Request"},
+        {404, "Not Found"},
+        {405, "Method Not Allowed"},
+        // Add more status codes as needed
+    };
+
+    auto it = status_codes.find(status_code);
+    if (it != status_codes.end()) {
+        return it->second;
+    }
+    return "Unknown Status";
 }
 
 Celeris::Celeris(unsigned short port)
@@ -74,10 +88,19 @@ void Celeris::handle_request(std::shared_ptr<boost::asio::ip::tcp::socket> socke
                 std::istringstream request_stream(request_line);
                 request_stream >> method >> path >> version;
 
+                // Print simplified request information
                 print_debug("Received Request: " + method + " " + path + " " + version, CYAN);
 
                 std::map<std::string, std::string> headers;
-                
+                std::string header_line;
+                while (std::getline(stream, header_line) && header_line != "\r") {
+                    auto colon_pos = header_line.find(':');
+                    if (colon_pos != std::string::npos) {
+                        std::string header_name = header_line.substr(0, colon_pos);
+                        std::string header_value = header_line.substr(colon_pos + 2); // Adjust for space after ':'
+                        headers[header_name] = header_value;
+                    }
+                }
 
                 std::string body;
                 if (headers.count("Content-Length")) {
@@ -92,11 +115,15 @@ void Celeris::handle_request(std::shared_ptr<boost::asio::ip::tcp::socket> socke
                 auto route_it = Router::routes_.find(path);
                 if (route_it != Router::routes_.end()) {
                     route_it->second(socket, req, res);
-                    print_debug("Response Sent: " + res.to_string(), GREEN);
                 } else {
                     res.set_error(404, "Route Not Found");
-                    print_debug("Error: Route Not Found for " + path, RED);
                 }
+
+                // Get reason phrase for the response
+                std::string reason_phrase = get_reason_phrase(res.status_code);
+
+                // Print simplified response information
+                print_debug("Response Sent: HTTP/1.1 " + std::to_string(res.status_code) + " " + reason_phrase, res.status_code >= 400 ? RED : GREEN);
 
                 boost::asio::async_write(*socket, boost::asio::buffer(res.to_string()),
                     [socket](const boost::system::error_code& error, std::size_t) {
@@ -115,6 +142,7 @@ void Celeris::handle_request(std::shared_ptr<boost::asio::ip::tcp::socket> socke
             }
         });
 }
+
 
 void Celeris::listen() {
     start();
