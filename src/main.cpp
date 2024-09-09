@@ -3,7 +3,7 @@
 
 int main() {
     // Create a Celeris server instance
-    Celeris app(8080, "0.0.0.0");
+    Celeris app(8080, "127.0.0.1");
 
     // Define a simple GET route
     app.get("/hello", [](const Request& req, Response& res) {
