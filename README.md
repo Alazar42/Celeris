@@ -22,47 +22,17 @@ To get started with Celeris, follow these steps:
    cd Celeris
    ```
 
-2. **Install Dependencies**:
-   - **Boost Libraries**: Celeris uses Boost for networking and other core functionalities. You can install Boost using your package manager:
-     - **Ubuntu**:
+2. **Build the Project**:
 
-       ```bash
-       sudo apt-get install libboost-all-dev
-       ```
-
-     - **MacOS** (using Homebrew):
-
-       ```bash
-       brew install boost
-       ```
-
-     - **Windows**:
-       Download and install Boost from the [official Boost website](https://www.boost.org/).
-
-   - **nlohmann JSON Library**: This library handles JSON serialization and deserialization in Celeris.
-     - Install via package manager:
-       - **Ubuntu**:
-
-         ```bash
-         sudo apt-get install nlohmann-json3-dev
-         ```
-
-       - **MacOS** (using Homebrew):
-
-         ```bash
-         brew install nlohmann-json
-         ```
-
-       - **Windows**:
-         You can download and add the JSON header file directly from the [nlohmann GitHub repository](https://github.com/nlohmann/json).
-
-3. **Build the Project**:
+   Celeris uses `FetchContent` to automatically manage dependencies, so you don't need to install them manually. You can build the project using the following commands:
 
    ```bash
    mkdir build && cd build
    cmake ..
    make
    ```
+
+   This will handle downloading and installing Boost and nlohmann JSON if they are not already available on your system.
 
 ## Getting Started
 
@@ -73,7 +43,7 @@ Here's a basic example of setting up a simple server with Celeris:
 #include <nlohmann/json.hpp>
 
 int main() {
-    // Create a Celeris server instance you can set port and host, used for bining purposes
+    // Create a Celeris server instance you can set port and host, used for binding purposes
     Celeris app(8080, "127.0.0.1");
 
     // Define a simple GET route
