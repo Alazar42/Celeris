@@ -73,19 +73,13 @@ Here's a basic example of setting up a simple server with Celeris:
 #include <nlohmann/json.hpp>
 
 int main() {
-    // Create a Celeris server instance
-    Celeris app(8080);
+    // Create a Celeris server instance you can set port and host, used for bining purposes
+    Celeris app(8080, "127.0.0.1");
 
     // Define a simple GET route
     app.get("/hello", [](const Request& req, Response& res) {
         nlohmann::json json_response = {{"message", "Hello, world!"}};
         res.set_json(json_response);
-    });
-
-    // Define a POST route
-    app.post("/echo", [](const Request& req, Response& res) {
-        nlohmann::json json_request = nlohmann::json::parse(req.body);
-        res.set_json(json_request);
     });
 
     // Start the server
