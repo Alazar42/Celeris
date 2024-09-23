@@ -6,14 +6,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Set paths for bundled dependencies
 set(LIB_DIR ${PROJECT_SOURCE_DIR}/lib)
-set(INCLUDE_DIR ${LIB_DIR}/include)
-set(BOOST_LIB_DIR ${LIB_DIR}/lib)
+set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
+set(BOOST_LIB_DIR ${LIB_DIR})
 
 # Include directories for nlohmann JSON and Boost
 include_directories(${INCLUDE_DIR})
-include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${INCLUDE_DIR}/boost) # Boost headers
 include_directories(${INCLUDE_DIR}/nlohmann) # nlohmann JSON headers
+include_directories(${INCLUDE_DIR}/celeris)
 
 # Manually specify Boost libraries if necessary
 set(BOOST_LIBS ${BOOST_LIB_DIR}/libboost_system.a) # Add more Boost libraries as needed
