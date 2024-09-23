@@ -35,8 +35,6 @@ endif()
 # Add source files
 set(SOURCES
     src/main.cpp
-    src/celeris.cpp
-    src/router.cpp
 )
 
 # Create executable
