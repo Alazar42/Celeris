@@ -11,7 +11,7 @@ int main() {
     });
 
     app.get("/", [](const Request& req, Response& res) {
-        nlohmann::json json_response = {{"message", "Welcome To HealthID Backend"}};
+        nlohmann::json json_response = {{"message", "Welcome To Celris Backend"}};
         res.set_json(json_response);
     });
 
