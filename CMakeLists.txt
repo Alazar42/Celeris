@@ -26,7 +26,7 @@ else()
 endif()
 
 # Check if nlohmann JSON is available
-if(EXISTS ${INCLUDE_DIR}/nlohmann/json.hpp)
+if(EXISTS ${INCLUDE_DIR}/json.hpp)
     message(STATUS "Using bundled nlohmann JSON: ${INCLUDE_DIR}/nlohmann/json.hpp")
 else()
     message(FATAL_ERROR "Bundled nlohmann JSON not found in ${INCLUDE_DIR}/nlohmann")

@@ -1,5 +1,4 @@
 #include "celeris.hpp"
-#include <nlohmann/json.hpp>
 
 int main() {
     // Create a Celeris server instance
