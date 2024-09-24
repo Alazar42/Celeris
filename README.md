@@ -41,7 +41,7 @@ To get started with Celeris, follow these steps:
 Here's a basic example of setting up a simple server with Celeris:
 
 ```cpp
-#include "celeris.hpp"
+#include <celeris/celeris.hpp>
 
 int main() {
     // Create a Celeris server instance
