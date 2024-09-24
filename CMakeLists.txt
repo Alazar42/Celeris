@@ -12,8 +12,6 @@ set(BOOST_LIB_DIR ${LIB_DIR})
 # Include directories for nlohmann JSON and Boost
 include_directories(${INCLUDE_DIR})
 include_directories(${INCLUDE_DIR}/boost) # Boost headers
-include_directories(${INCLUDE_DIR}/nlohmann) # nlohmann JSON headers
-include_directories(${INCLUDE_DIR}/celeris)
 
 # Manually specify Boost libraries if necessary
 set(BOOST_LIBS ${BOOST_LIB_DIR}/libboost_system.a) # Add more Boost libraries as needed
@@ -25,12 +23,6 @@ else()
     message(FATAL_ERROR "Bundled Boost not found in ${INCLUDE_DIR}/boost")
 endif()
 
-# Check if nlohmann JSON is available
-if(EXISTS ${INCLUDE_DIR}/json.hpp)
-    message(STATUS "Using bundled nlohmann JSON: ${INCLUDE_DIR}/nlohmann/json.hpp")
-else()
-    message(FATAL_ERROR "Bundled nlohmann JSON not found in ${INCLUDE_DIR}/nlohmann")
-endif()
 
 # Add source files
 set(SOURCES
