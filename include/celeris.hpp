@@ -78,15 +78,16 @@ private:
         acceptor_.async_accept(*socket, [this, socket](boost::system::error_code ec)
                                {
             if (!ec) {
-                handle_incoming_request(socket); // Updated method call
+                handle_incoming_request(socket); 
             } else {
                 print_debug("Error accepting connection: " + ec.message(), RED);
             }
-            start_accept(); });
+            start_accept(); // Continue accepting new connections
+        });
     }
 
     // Handle the incoming request
-    void handle_incoming_request(std::shared_ptr<boost::asio::ip::tcp::socket> socket) // Renamed method to avoid conflict
+    void handle_incoming_request(std::shared_ptr<boost::asio::ip::tcp::socket> socket)
     {
         auto buffer = std::make_shared<boost::beast::flat_buffer>();
         auto req = std::make_shared<boost::beast::http::request<boost::beast::http::string_body>>();
@@ -104,7 +105,7 @@ private:
                 Response custom_res;
 
                 // Route the request using Router's method
-                bool route_found = handle_router_request(socket, custom_req, custom_res); // Updated method call
+                bool route_found = handle_router_request(socket, custom_req, custom_res); 
 
                 if (!route_found)
                 {
@@ -118,7 +119,6 @@ private:
                                          {
                     if (!error)
                     {
-
                         // Gracefully close the connection
                         socket->shutdown(boost::asio::ip::tcp::socket::shutdown_both);
                         socket->close();
@@ -132,7 +132,8 @@ private:
             else
             {
                 print_debug("Error reading request: " + ec.message(), RED);
-            } });
+            } 
+        });
     }
 };
 
