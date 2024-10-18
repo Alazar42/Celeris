@@ -6,6 +6,15 @@
 #include <sstream>
 #include "json.hpp"
 
+// ANSI escape codes for colorful output
+#define RESET "\033[0m"
+#define RED "\033[31m"
+
+inline void print_debug(const std::string &message, const std::string &color)
+{
+    std::cout << color << message << RESET << std::endl;
+}
+
 class Response {
 public:
     int status_code; // HTTP status code (default 200 OK)
@@ -43,6 +52,10 @@ public:
         body = json_response.dump();
         status_code = code;
         set_header("Content-Type", "application/json");
+        
+        // Log the error in red
+        print_debug("Error " + std::to_string(code) + ": " + detail, RED);
+
         // Only set Content-Length if it's not already set
         if (headers.find("Content-Length") == headers.end()) {
             set_header("Content-Length", std::to_string(body.size()));

@@ -22,12 +22,6 @@
 #define CYAN "\033[36m"
 #define RED "\033[31m"
 
-// Debug log helper for colorful output
-inline void print_debug(const std::string &message, const std::string &color)
-{
-    std::cout << color << message << RESET << std::endl;
-}
-
 class Celeris : private Router
 {
 public:
@@ -102,7 +96,8 @@ private:
                                        {
             if (!ec)
             {
-                print_debug("Received request: " + req->method_string().to_string() + " " + req->target().to_string(), CYAN);
+                // Detailed request logging
+                print_debug("Received request: " + req->method_string().to_string() + " " + req->target().to_string() + " HTTP/" + std::to_string(req->version()), CYAN);
 
                 // Create Request and Response objects
                 Request custom_req(req->method_string().to_string(), req->target().to_string(), {}, req->body());
@@ -119,17 +114,18 @@ private:
 
                 // Send the response
                 boost::asio::async_write(*socket, boost::asio::buffer(custom_res.to_string()),
-                                         [socket](const boost::system::error_code &error, std::size_t)
+                                         [socket, req, &custom_res](const boost::system::error_code &error, std::size_t)
                                          {
                     if (!error)
                     {
+
                         // Gracefully close the connection
                         socket->shutdown(boost::asio::ip::tcp::socket::shutdown_both);
                         socket->close();
                     }
                     else
                     {
-                        std::cerr << "Error sending response: " << error.message() << std::endl;
+                        print_debug("Error sending response: " + error.message(), RED);
                     }
                 });
             }

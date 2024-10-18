@@ -37,9 +37,10 @@ public:
     }
 
     // Handles routing based on the request method and path
-    bool handle_router_request(std::shared_ptr<tcp::socket> socket, Request &req, Response &res) // Renamed method
+    bool handle_router_request(std::shared_ptr<tcp::socket> socket, Request &req, Response &res)
     {
         std::string route_key = req.get_method() + ":" + req.get_path(); // Match the key format
+
         auto it = routes_.find(route_key);
         if (it != routes_.end())
         {
@@ -49,13 +50,23 @@ public:
         }
         else
         {
-            // No route found, return false
-            return false;
+            // No exact route found; check for a different method on the same path
+            std::string other_method = (req.get_method() == "POST") ? "GET" : "POST";
+            std::string method_check_key = other_method + ":" + req.get_path(); // Check if the other method exists
+
+            if (routes_.find(method_check_key) != routes_.end())
+            {
+                res.set_error(405, "Method Not Allowed");
+                return true; // Method not allowed
+            }
+
+            std::cout << format_error_message("Route not found for: " + route_key) << std::endl; // Debug log for route not found
+            return false; // No route found
         }
     }
 
     // Handles incoming requests
-    void handle_incoming_request(std::shared_ptr<tcp::socket> socket) // Renamed method to avoid conflict
+    void handle_incoming_request(std::shared_ptr<tcp::socket> socket)
     {
         auto buffer = std::make_shared<boost::asio::streambuf>();
 
@@ -72,7 +83,7 @@ public:
                                               std::istringstream request_stream(request_line);
                                               request_stream >> method >> path >> version;
 
-                                              // Ensure method and path are valid
+                                              // Log the request method and path
                                               std::cout << "Received request: " << method << " " << path << std::endl;
 
                                               // Parse headers and body
@@ -98,7 +109,8 @@ public:
                                                   std::size_t content_length = std::stoul(headers["Content-Length"]);
                                                   body.resize(content_length);
                                                   stream.read(&body[0], content_length);
-                                                  if (stream.gcount() < content_length) {
+                                                  if (stream.gcount() < content_length)
+                                                  {
                                                       std::cerr << "Warning: Read less than Content-Length" << std::endl;
                                                   }
                                               }
@@ -107,8 +119,39 @@ public:
                                               Request req(method, path, headers, body);
                                               Response res;
 
+                                              // Parse JSON if the method is POST and Content-Type is application/json
+                                              if (req.get_method() == "POST" && req.has_header("Content-Type") && req.get_header("Content-Type") == "application/json")
+                                              {
+                                                  try
+                                                  {
+                                                      auto json_data = req.parse_json();
+                                                      // Optionally process json_data here if needed
+                                                  }
+                                                  catch (const std::runtime_error &e)
+                                                  {
+                                                      std::cerr << format_error_message("Error parsing JSON: " + std::string(e.what())) << std::endl;
+                                                      res.set_error(400, "Invalid JSON");
+                                                      // Send the error response
+                                                      boost::asio::async_write(*socket, boost::asio::buffer(res.to_string()),
+                                                                               [socket](const boost::system::error_code &error, std::size_t)
+                                                                               {
+                                                                                   if (!error)
+                                                                                   {
+                                                                                       // Gracefully close the connection
+                                                                                       socket->shutdown(tcp::socket::shutdown_both);
+                                                                                       socket->close();
+                                                                                   }
+                                                                                   else
+                                                                                   {
+                                                                                       std::cerr << "Error sending response: " << error.message() << std::endl;
+                                                                                   }
+                                                                               });
+                                                      return; // Early return to avoid further processing
+                                                  }
+                                              }
+
                                               // Route the request
-                                              bool route_found = handle_router_request(socket, req, res); // Updated method call
+                                              bool route_found = handle_router_request(socket, req, res);
 
                                               if (!route_found)
                                               {
@@ -142,6 +185,12 @@ public:
 private:
     // Map to store routes with their handlers
     std::map<std::string, RequestHandler> routes_;
+
+    // Format error message to display in red
+    static std::string format_error_message(const std::string &message)
+    {
+        return "\033[31m" + message + "\033[0m"; // ANSI escape code for red text
+    }
 };
 
 #endif // ROUTER_HPP
