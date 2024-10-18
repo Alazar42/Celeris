@@ -17,7 +17,7 @@ int main() {
 
     // Define a POST route
     app.post("/echo", [](const Request& req, Response& res) {
-        nlohmann::json json_request = nlohmann::json::parse(req.body);
+        nlohmann::json json_request = nlohmann::json::parse(req.body_);
         res.set_json(json_request);
     });
 

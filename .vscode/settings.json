@@ -80,6 +80,9 @@
         "ranges": "cpp",
         "valarray": "cpp",
         "unordered_set": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "csetjmp": "cpp",
+        "strstream": "cpp",
+        "cfenv": "cpp"
     }
 }
