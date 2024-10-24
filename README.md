@@ -3,7 +3,7 @@
 ![Celeris Logo](docs/assets/celeris-main.png)
 
 ## **Overview**  
-**Celeris** is a high-performance backend technology built with C++. Inspired by the Latin word for "fast" or "rapid," Celeris provides a modern and efficient way to build backend APIs. It combines the power and speed of C++ with a clean, developer-friendly API design, similar to popular frameworks like **FastAPI** or **Node.js**.
+**Celeris** is a backend technology built with C++. Inspired by the Latin word for "fast" or "rapid," Celeris provides a modern and efficient way to build backend APIs. It combines the power and speed of C++ with a clean, developer-friendly API design, similar to popular frameworks like **FastAPI** or **Node.js**.
 
 ---
 
