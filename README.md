@@ -2,43 +2,41 @@
 
 ![Celeris Logo](docs/assets/celeris-main.png)
 
-Celeris is a high-performance backend technology built with C++. Inspired by the Latin word for "fast" or "rapid," Celeris is designed to provide developers with a modern and efficient way to build backend APIs, similar to popular frameworks like FastAPI or Node.js, but with the power and speed of C++.
+## **Overview**  
+**Celeris** is a high-performance backend technology built with C++. Inspired by the Latin word for "fast" or "rapid," Celeris provides a modern and efficient way to build backend APIs. It combines the power and speed of C++ with a clean, developer-friendly API design, similar to popular frameworks like **FastAPI** or **Node.js**.
 
-## Features
+---
 
-- **High Performance**: Leveraging the speed of C++, Celeris provides fast and efficient API handling for high-demand applications.
-- **Dynamic Routing**: Easily define routes for your application, supporting both GET and POST methods out of the box.
-- **JSON Handling**: Built-in support for JSON serialization and deserialization using the nlohmann JSON library.
+## **Features**  
+- **High Performance**: Leverages C++’s speed for fast and efficient API handling, ideal for high-demand applications.  
+- **Dynamic Routing**: Simple and flexible route definition with built-in support for GET and POST methods.  
+- **JSON Handling**: Provides built-in serialization and deserialization of JSON using the **nlohmann JSON** library.  
 - **Extensible**: Modular design allows easy addition of new features and extensions.
 
-## Installation
+---
 
-Celeris is designed to be easy to set up without the need for separately installing Boost or nlohmann JSON, as these dependencies are included in the project itself.
-
-### Install Celeris
-
+## **Installation**  
 To get started with Celeris, follow these steps:
 
-1. **Clone the Repository**:
-
+1. **Clone the Repository**:  
    ```bash
    git clone https://github.com/Alazar42/Celeris.git
-   cd Celeris
    ```
 
-2. **Build the Project**:
-
+2. **Build the Project**:  
    ```bash
+   cd Celeris
    mkdir build && cd build
    cmake ..
    make
    ```
 
-   This will automatically use the included Boost and nlohmann JSON libraries, so you don’t need to install them separately.
+   Celeris comes with pre-included dependencies like Boost and nlohmann JSON, so there’s no need to install them separately.
 
-## Getting Started
+---
 
-Here's a basic example of setting up a simple server with Celeris:
+## **Getting Started**  
+Here’s a basic example to set up a simple server using Celeris:
 
 ```cpp
 #include <celeris/celeris.hpp>
@@ -67,28 +65,36 @@ int main() {
 
 ```
 
-## Documentation
+**Explanation**:
+- Creates a Celeris server instance on port **8080**.  
+- Defines a simple GET route (`/hello`) that responds with a JSON message.  
+- Defines a POST route (`/echo`) that echoes the received JSON request back in the response.  
+- Starts the server and listens for incoming requests.
 
-For full documentation and advanced usage, please visit the [Celeris Documentation](https://github.com/Alazar42/Celeris/wiki).
+---
 
-## Contributing
+## **Contributing**  
+Celeris is actively developed, and we encourage contributions! Here’s how you can contribute:
 
-Celeris is in active development, and contributions are welcome! To get started:
-
-1. Fork the repository.
-2. Create a new branch:
-
+1. **Fork the Repository**.  
+2. **Create a New Branch**:  
    ```bash
    git checkout -b feature-branch
    ```
+3. **Make Your Changes**.  
+4. **Submit a Pull Request** with a clear description of your changes.
 
-3. Make your changes.
-4. Submit a pull request.
+### **Looking for Contributors**  
+We’re seeking collaborators to help expand Celeris, particularly for adding:  
+- **Database Integration** (preferably with ORM support)  
+- **WebSocket Support**  
 
-## License
+---
 
-Celeris is licensed under the GNU General Public License. See the LICENSE file for more information.
+## **License**  
+Celeris is licensed under the **GNU General Public License**. For more details, see the [LICENSE](https://github.com/Alazar42/Celeris/blob/main/LICENSE) file.
 
-## Contact
+---
 
-For questions, issues, or feature requests, please open an issue on GitHub or contact us at <alazartesfaye42@gmail.com>.
+## **Contact**  
+For questions, issues, or feature requests, please open an issue on [GitHub](https://github.com/Alazar42/Celeris.git) or contact us at [alazartesfaye42@gmail.com](mailto:alazartesfaye42@gmail.com).
