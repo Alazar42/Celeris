@@ -39,22 +39,28 @@ To get started with Celeris, follow these steps:
 Here’s a basic example to set up a simple server using Celeris:
 
 ```cpp
-#include <celeris/celeris.hpp>
+#include "celeris.hpp"
 
 int main() {
-    // Create a Celeris server instance
-    Celeris app(8080, "127.0.0.1");
 
-    // Define a simple GET route
+    // Create a Celeris server instance
+    Celeris app(8080);
+
+    // Define a simple GET route for json response
     app.get("/hello", [](const Request& req, Response& res) {
         nlohmann::json json_response = {{"message", "Hello, world!"}};
-        res.set_json(json_response);
+        res.send(json_response.dump(), 200, JSON_TYPE);
     });
 
-    // Define a POST route
+    // Define a simple GET route for HTML response
+    app.get("/", [](const Request& req, Response& res) {
+        std::string response = "<html><h1>Welcome To Celris Backend</h1></html>";
+        res.send(response, 200, HTML_TYPE);
+    });
+
+    // Define a POST route for XML response
     app.post("/echo", [](const Request& req, Response& res) {
-        nlohmann::json json_request = nlohmann::json::parse(req.body);
-        res.set_json(json_request);
+        res.send(req.body_, 200, XML_TYPE);
     });
 
     // Start the server
@@ -62,7 +68,6 @@ int main() {
 
     return 0;
 }
-
 ```
 
 **Explanation**:
