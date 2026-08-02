@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://1arh5pt2h86a"]
+
+[ext_resource type="Script" uid="uid://cbe2iocfbdwo0" path="res://addons/celeris/example/main.gd" id="1_1hycc"]
+
+[node name="Server" type="Node" unique_id=322655951]
+script = ExtResource("1_1hycc")
