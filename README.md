@@ -1,5 +1,7 @@
 # Celeris – REST Framework for Godot 4
 
+![Logo](https://i.ibb.co/cSKHnt8z/celeris-with-name.jpg)
+
 Celeris is a lightweight, declarative REST framework for Godot 4 that makes building HTTP servers and APIs dead simple. Inspired by FastAPI's philosophy, Celeris lets you define models and routes with minimal boilerplate.
 
 ## Features
